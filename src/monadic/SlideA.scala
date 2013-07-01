@@ -1,15 +1,17 @@
 package monadic
 
-object SlideA {
+/**
+ * A Common Problem.
+ */
+object SlideA extends Database {
 
-  val lastNames = Map("1" -> "Richardson", "2" -> "Robinson").withDefaultValue(null)
-  
-  val firstNames = Map("1" -> "James", "2" -> "Simon").withDefaultValue(null)
-  
   def lastName(id: String): String = lastNames(id)
   
   def firstName(id: String): String = firstNames(id)
   
+  /**
+   * Handling nulls...
+   */
   def fullName(id: String): String = {
     val last = lastName(id)
     
@@ -31,17 +33,13 @@ object SlideA {
     println("2 -> " + fullName("2"))
     println("3 -> " + fullName("3"))
   }
-}
-
-
-trait Maybe[T] {
   
+  trait Maybe[T]
+    
+  object Nothing extends Maybe[Any]
+    
+  class Some[T](val value: T) extends Maybe[T]
+
 }
 
-object Nothing extends Maybe[Any] {
-  
-}
 
-class Some[T](val value: T) extends Maybe[T] {
-  
-}

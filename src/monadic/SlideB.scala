@@ -1,0 +1,68 @@
+package monadic
+
+/**
+ * Working towards a solution.  Allowing the Maybe monad to be combined.
+ */
+object SlideB extends Database {
+  trait Maybe[T] {
+    def combine(f: (T => Maybe[T])): Maybe[T]
+    
+    // def lift: T
+  }
+    
+  case class Nothing[T] extends Maybe[T] {
+    override def combine(f: (T => Maybe[T])):  Maybe[T] = new Nothing[T]
+  }
+    
+  case class Some[T](val value: T) extends Maybe[T] {
+    override def combine(f: (T => Maybe[T])): Maybe[T] = f(value)
+  }
+  
+  def _return[T](v: T) = Some(v)
+  
+  def lastName(id: String): String = lastNames(id)
+  
+  def firstName(id: String): String = firstNames(id)
+  
+  def dbLookup(lookup: String => String): String => Maybe[String] = s => {
+    val fromDb = lookup(s)
+    
+    if (fromDb == null) {
+      Nothing()
+    } else {
+      _return(fromDb)
+    }
+  }
+  
+  def fullName(id: String): String = {
+    val last = lastName(id)
+    
+    if (last != null) {
+      val first = firstName(id)
+      
+      if (first != null) {
+        first + " " + last
+      } else {
+        null
+      }
+    } else {
+      null
+    }
+  }
+  
+  def fullNameMonadic(id: String): Maybe[String] = 
+      _return("")
+          .combine(empty => _return(firstName(id)))
+          .combine(firstname => _return(firstname + " " + lastName(id)))
+          
+  def main(args: Array[String]): Unit = {
+    println("1 -> " + fullName("1"))
+    println("2 -> " + fullName("2"))
+    println("3 -> " + fullName("3"))
+    
+    //println("1 -> " + fullNameMonadic("1"))
+    //println("2 -> " + fullNameMonadic("2"))
+    //println("3 -> " + fullNameMonadic("3"))
+  }
+          
+}
