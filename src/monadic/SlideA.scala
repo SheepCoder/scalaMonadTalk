@@ -1,6 +1,6 @@
 package monadic
 
-object Slide1 {
+object SlideA {
 
   val lastNames = Map("1" -> "Richardson", "2" -> "Robinson").withDefaultValue(null)
   
