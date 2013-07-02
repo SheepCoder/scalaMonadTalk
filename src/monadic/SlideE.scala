@@ -25,15 +25,15 @@ object SlideE {
   
   private def _pop(s: MyStack): (MyStack, Int) = (s.tail, s.head)
   
-  def pop: Int => State[MyStack, Int] = a => new State[MyStack,Int](s => _pop(s))
+  def pop: Int => State[MyStack, Int] = a => new State(s => _pop(s))
   
   private def _push(s: MyStack, value: Int): (MyStack, Int) = (value :: s, -1)
   
-  def push(value: Int): Int => State[MyStack, Int] = a => new State[MyStack, Int](s => _push(s, value))
+  def push(value: Int): Int => State[MyStack, Int] = a => new State(s => _push(s, value))
  
   private def _peek(s: MyStack): (MyStack, Int) = (s, s.head)
   
-  def peek: Int => State[MyStack, Int] = a => new State[MyStack,Int](s => _peek(s))
+  def peek: Int => State[MyStack, Int] = a => new State(s => _peek(s))
   
 //def main(args: Array[String]): Unit = {
 //    val initialStack: MyStack = List(2, 3)
@@ -60,9 +60,9 @@ object SlideE {
     
     val actions = initial >>= pop >>= push(3) >>= push(4) >>= peek >>= (i => {
       if (i == 4) {
-        _return(i) >>= pop >>= push(9)
+        new State(s => {val s1 = _pop(s); _push(s1._1, 9)})
       } else {
-        push(8)(i)
+        new State(s => _push(s, 8))
       }
     })
     
