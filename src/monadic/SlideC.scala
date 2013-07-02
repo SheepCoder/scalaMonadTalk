@@ -1,7 +1,7 @@
 package monadic
 
 /**
- * Reuse of code
+ * Reuse of code: An example using maths and the Maybe monad.
  */
 object SlideC {
   trait Maybe[T] {

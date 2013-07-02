@@ -1,10 +1,16 @@
 package monadic
 
+/**
+ * Introducing the state monad
+ */
 object SlideE {
   
 
   // State Monad
   class State[S, A](val stateFunction: S => (S, A)) {
+    /**
+     * Compare to the same function on the Maybe Monad
+     */
     def >>=(bindFunction: A => State[S, A]): State[S, A] = {
       new State[S, A](
         s => {
@@ -15,8 +21,14 @@ object SlideE {
     }
   }
   
+  /**
+   * Compare to Maybe Monad
+   */
   def _return[S,A](value : A): State[S, A] = new State[S, A](s => (s, value))
   
+  /**
+   * Something new for State but can be compared to lift on Maybe Monad
+   */
   def _runState[S, A](state: State[S, A], initialState: S) = state.stateFunction(initialState)
   
   // Back into Stacks
@@ -58,8 +70,8 @@ object SlideE {
  def main(args: Array[String]): Unit = {
     val initial = _return[MyStack, Int](-1)
     
-    val actions = initial >>= pop >>= push(3) >>= push(4) >>= peek >>= (i => {
-      if (i == 4) {
+    val actions = initial >>= pop >>= push(3) >>= push(4) >>= peek >>= (peekedValue => {
+      if (peekedValue == 4) {
         new State(s => {val s1 = _pop(s); _push(s1._1, 9)})
       } else {
         new State(s => _push(s, 8))
