@@ -37,15 +37,16 @@ object SlideC {
   def div(top: Int, bottom: Int): Int = top / bottom
   
   def doMath(start: Int):Int = {
-    div(10, sub(add(start, 3), 8))
+    add(div(10, sub(add(start, 3), 8)), 4)
   }
   
   def doMathExpanded(start: Int): Int = {
     val add3: Int => Int = i => add(i, 3)
     val sub8: Int => Int = i => sub(i, 8)
     val div10: Int => Int = i => div(10, i)
+    val add4: Int => Int = i => add(i, 4)
     
-    div10(sub8(add3(start)))
+    add4(div10(sub8(add3(start))))
   }
   
   def doMathMonadic(start: Int): Int = {
@@ -59,22 +60,27 @@ object SlideC {
       }
     }
     
-    def doMath: Int => Maybe[Int] = i => _return(i) >>= add3 >>= sub8 >>= div10
+    val add4: Int => Maybe[Int] = i => _return(add(i, 4))
+    
+    def doMath: Int => Maybe[Int] = i => _return(i) >>= add3 >>= sub8 >>= div10 >>= add4
     
     doMath(start).lift
   }
   
   def main(args: Array[String]): Unit = {
+    println("Standard")
     println("3 => " + doMath(3))
     println("10 => " + doMath(10))
     //println("5 => " + doMath(5))
     
-    println("3 => " + doMathExpanded(3))
-    println("10 => " + doMathExpanded(10))
+//    println("Expanded")
+//    println("3 => " + doMathExpanded(3))
+//    println("10 => " + doMathExpanded(10))
     //println("5 => " + doMathExpanded(5))
-    
-    println("3 => " + doMathMonadic(3))
-    println("10 => " + doMathMonadic(10))
+
+    //    println("Monadic")
+//    println("3 => " + doMathMonadic(3))
+//    println("10 => " + doMathMonadic(10))
     //println("5 => " + doMathMonadic(5))
   }
 }

@@ -24,8 +24,8 @@ object SlideB extends Database {
   
   def firstName(id: String): String = firstNames(id)
   
-  def dbLookup(lookup: String => String): String => Maybe[String] = s => {
-    val fromDb = lookup(s)
+  def dbLookup(lookup : () => String): Maybe[String] = {
+    val fromDb = lookup()
     
     if (fromDb == null) {
       Nothing()
@@ -50,19 +50,23 @@ object SlideB extends Database {
     }
   }
   
-  def fullNameMonadic(id: String): Maybe[String] = 
-      _return("")
-          .combine(empty => _return(firstName(id)))
-          .combine(firstname => _return(firstname + " " + lastName(id)))
+  def fullNameMonadic(personId: String): Maybe[String] = 
+      _return(personId)
+          .combine(id => dbLookup(() => firstName(id))
+              .combine(firstname => 
+                    dbLookup(() => lastName(id))
+                    .combine(lastName => _return(firstname + " " + lastName))))
           
   def main(args: Array[String]): Unit = {
     println("1 -> " + fullName("1"))
     println("2 -> " + fullName("2"))
     println("3 -> " + fullName("3"))
+    println("4 -> " + fullName("4"))
     
-    //println("1 -> " + fullNameMonadic("1"))
-    //println("2 -> " + fullNameMonadic("2"))
-    //println("3 -> " + fullNameMonadic("3"))
+    println("1 -> " + fullNameMonadic("1"))
+    println("2 -> " + fullNameMonadic("2"))
+    println("3 -> " + fullNameMonadic("3"))
+    println("4 -> " + fullNameMonadic("4"))
   }
           
 }
